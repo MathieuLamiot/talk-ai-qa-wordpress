@@ -2,7 +2,7 @@
   --brand-bg: #ffffff;
   --brand-fg: #111111;
   --brand-accent: #5f6fff;
-  --brand-cta: #e83e8c; /* baseline CTA pink */
+  --brand-cta: #999999; /* accidental change - SHOULD NOT happen in this task */
   --radius: 8px;
 }
 
