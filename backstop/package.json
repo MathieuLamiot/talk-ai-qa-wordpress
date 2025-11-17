@@ -1,0 +1,11 @@
+{
+  "name": "mcp-visual-triage",
+  "private": true,
+  "scripts": {
+    "backstop:test": "backstop test --config=backstop.config.js",
+    "backstop:approve": "backstop approve --config=backstop.config.js"
+  },
+  "devDependencies": {
+    "backstopjs": "^6.3.2"
+  }
+}
