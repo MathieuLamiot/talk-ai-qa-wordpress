@@ -1,0 +1,2 @@
+.pricing .card { border-radius: var(--radius); padding: 20px; }
+.pricing .card .btn { background: var(--brand-accent); color:#fff; }

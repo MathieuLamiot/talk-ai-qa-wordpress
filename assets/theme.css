@@ -1,0 +1,24 @@
+:root{
+  --brand-bg: #ffffff;
+  --brand-fg: #111111;
+  --brand-accent: #5f6fff;
+  --brand-cta: #e83e8c; /* baseline CTA pink */
+  --radius: 8px;
+}
+
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;color:var(--brand-fg);background:var(--brand-bg)}
+.container{max-width:1100px;margin:0 auto;padding:16px}
+.site-header{border-bottom:1px solid #eee;background:#fff;position:sticky;top:0}
+.site-header .container{display:flex;gap:16px;align-items:center;justify-content:space-between}
+.logo{font-weight:700;text-decoration:none;color:var(--brand-fg)}
+.menu{display:flex;gap:16px;list-style:none;margin:0;padding:0}
+.menu a{text-decoration:none;color:var(--brand-fg)}
+.btn{display:inline-block;padding:10px 14px;border-radius:var(--radius);border:1px solid #ddd;text-decoration:none;color:var(--brand-fg);background:#f8f8f8}
+.btn.cta{background:var(--brand-cta);color:#fff;border-color:transparent}
+
+.hero{padding:48px 0}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{border:1px solid #e5e5e5;border-radius:var(--radius);padding:16px;background:#fff}
+.card h3{margin-top:0}
+.site-footer{border-top:1px solid #eee;background:#fafafa;margin-top:48px}
