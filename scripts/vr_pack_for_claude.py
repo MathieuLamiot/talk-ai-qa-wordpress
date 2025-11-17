@@ -19,7 +19,7 @@ Usage:
     [--include-full-json]
 
 Outputs:
-  out/claude-packet-<task-stem>.md
+  out/ai-packet.md
   out/diff-summary.json
 """
 import argparse
@@ -250,8 +250,7 @@ def main():
         full_json_obj=full_json_obj
     )
 
-    task_stem = pathlib.Path(task_path).stem
-    out_md = out_dir / f"claude-packet-{task_stem}.md"
+    out_md = out_dir / "ai-packet.md"
     out_md.write_text(packet, encoding="utf-8")
     print(f"Wrote: {out_md}")
 
