@@ -1,3 +1,4 @@
-Title: Restyle header CTA to brand blue
+# Title: Restyle header CTA to brand blue
 Labels: ui, global
-Body: Updates CTA color globally across site (header and hero buttons).
+Body:
+Updates CTA color globally across site (header and hero buttons).
