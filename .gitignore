@@ -4,3 +4,9 @@ backstop/backstop_data/bitmaps_test/
 backstop/backstop_data/html_report/
 backstop/backstop_data/json_report/
 out/
+
+# Playwright
+node_modules/
+playwright-report/
+test-results/
+.env
