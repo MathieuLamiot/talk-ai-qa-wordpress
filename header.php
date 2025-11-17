@@ -19,7 +19,7 @@
         ]);
       ?>
     </nav>
-    <a href="<?php echo esc_url(home_url('/get-started')); ?>">Get Started</a>
+    <a href="<?php echo esc_url(home_url('/get-started')); ?>" class="btn cta">Get Started</a>
   </div>
 </header>
 <main role="main" class="site-main">
