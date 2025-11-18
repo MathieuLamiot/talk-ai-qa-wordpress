@@ -1,5 +1,38 @@
 # Playwright Test Generation Guidelines for WordPress
 
+## 🚨 CRITICAL: WordPress Delete Patterns (READ THIS FIRST)
+
+### The #1 Rule for Deleting Pages/Posts
+
+**NEVER use hover-based deletion. ALWAYS navigate to the edit page first.**
+
+```typescript
+// ✅ CORRECT - This is the ONLY reliable way to delete pages/posts
+const pageRow = page.getByRole('row').filter({ hasText: 'Promo' });
+const editLink = pageRow.getByRole('link', { name: '"Promo" (Edit)' });
+await editLink.click();
+await expect(page.getByRole('heading', { name: 'Promo' })).toBeVisible();
+await page.getByRole('button', { name: 'Move to trash' }).click();
+await page.waitForURL(/edit\.php\?post_type=page/);
+await expect(page.getByText(/1 (page|item) moved to the Trash/)).toBeVisible();
+```
+
+### The #1 Rule for Removing Menu Items
+
+**ALWAYS expand the menu item first, then click Remove.**
+
+```typescript
+// ✅ CORRECT - This is the ONLY reliable way to remove menu items
+const menuItem = page.locator('.menu-item').filter({ hasText: 'Promo' }).last();
+await menuItem.locator('.item-edit').click();
+const removeLink = menuItem.getByRole('link', { name: 'Remove' });
+await expect(removeLink).toBeVisible();
+await removeLink.click();
+await expect(page.getByText('Menu item removed')).toBeVisible();
+```
+
+---
+
 ## Critical Rules for Generating Accurate WordPress Tests
 
 ### 1. **ALWAYS Inspect the Actual Page Structure First**
@@ -45,6 +78,8 @@ Common WordPress admin patterns you should know:
 - Row actions (Edit, Trash, View) appear on hover
 - These are links but may have complex accessible names
 - Use regex patterns for names: `/Move.*to the Trash/i`
+- **CRITICAL:** The hover-based approach is unreliable in automation
+- **ALWAYS use the direct navigation approach instead** (see detailed pattern below)
 
 #### Block Editor (Gutenberg)
 - Editor content is in an iframe (`iframe[name="editor-canvas"]`)
@@ -146,7 +181,77 @@ await page.getByRole('button', { name: 'Save Menu' }).click();
 await expect(page.getByText(/has been updated/)).toBeVisible();
 ```
 
-### 9. **Document Assumptions and Quirks**
+### 9. **WordPress-Specific Delete Patterns**
+
+#### Deleting Posts/Pages: ALWAYS Use Direct Navigation
+
+**❌ WRONG - Hover-based approach (unreliable):**
+```typescript
+// This approach fails frequently because hover doesn't trigger consistently
+const pageRow = page.getByRole('row').filter({ hasText: /^Select Promo/ });
+await pageRow.hover();
+await pageRow.getByRole('link', { name: 'Move "Promo" to the Trash' }).click();
+```
+
+**✅ CORRECT - Direct navigation approach:**
+```typescript
+// Navigate directly to the edit page, then trash from there
+// This is more reliable and doesn't depend on hover behavior
+const pageRow = page.getByRole('row').filter({ hasText: 'Promo' });
+const editLink = pageRow.getByRole('link', { name: '"Promo" (Edit)' });
+await editLink.click();
+
+// Wait for edit page to load
+await expect(page.getByRole('heading', { name: 'Promo' })).toBeVisible();
+
+// Click the Move to trash button (available in both classic and block editors)
+await page.getByRole('button', { name: 'Move to trash' }).click();
+
+// Wait for redirect back to pages list
+await page.waitForURL(/edit\.php\?post_type=page/);
+
+// Verify deletion
+await expect(page.getByText(/1 (page|item) moved to the Trash/)).toBeVisible();
+```
+
+**Why direct navigation is better:**
+- Hover interactions are unreliable in headless browsers
+- Timing issues: hover state may not trigger before clicking
+- The "wrong" row might receive hover focus
+- Direct navigation is deterministic and always works
+- Only slightly slower (one extra page load)
+
+#### Removing Menu Items: Use Expand-Then-Remove Pattern
+
+**✅ CORRECT:**
+```typescript
+// Find the menu item in the WordPress menu editor
+const menuItem = page.locator('.menu-item').filter({ hasText: 'Promo' }).last();
+
+// WordPress menu items must be expanded before the Remove link appears
+// Click the .item-edit element to expand (NOT .menu-item-handle for removal)
+await menuItem.locator('.item-edit').click();
+
+// Wait for the Remove link to appear
+const removeLink = menuItem.getByRole('link', { name: 'Remove' });
+await expect(removeLink).toBeVisible();
+
+// Click Remove
+await removeLink.click();
+
+// Verify removal
+await expect(page.getByText('Menu item removed')).toBeVisible();
+```
+
+**Key points:**
+- Use `.locator('.menu-item')` to find menu items (class-based, as they're `<li>` elements)
+- Use `.filter({ hasText: 'Item Name' })` to identify the specific item
+- Use `.last()` if there might be duplicates from failed test runs
+- Click `.item-edit` to expand the item (this is a clickable element in the title area)
+- Wait for the `Remove` link to be visible (it only appears when expanded)
+- The Remove element IS a proper link with `role="link"`
+
+### 10. **Document Assumptions and Quirks**
 
 **❌ WRONG:**
 ```typescript
@@ -178,7 +283,11 @@ Before generating ANY Playwright test for WordPress:
 
 | Mistake | Why It Fails | Correct Approach |
 |---------|--------------|------------------|
-| `getByRole('link', { name: /Edit/ })` on menu items | Menu handles are divs, not links | Use `.menu-item-handle` locator |
+| Using hover to reveal trash/edit links | Hover is unreliable in automation; wrong row may be targeted | Navigate to edit page, then trash from there |
+| `getByRole('row').filter({ hasText: /^Select/ })` | Too specific regex, fragile | Use `filter({ hasText: 'PageName' })` without `^Select` |
+| Trying to click trash link directly from list | Link may not be visible, timing issues | Click edit link, then trash button on edit page |
+| `getByRole('link', { name: /Edit/ })` on menu items | Menu handles are divs, not links | Use `.menu-item-handle` or `.item-edit` locator |
+| Not expanding menu items before removing | Remove link only appears when expanded | Click `.item-edit` first, wait for Remove to be visible |
 | Clicking before page is ready | Race condition | Use `await expect(...).toBeVisible()` |
 | Assuming all buttons have role="button" | WordPress uses divs/spans as buttons | Inspect actual HTML first |
 | Not scoping selectors | Multiple matches cause flakiness | Filter by container, use `.first()`/`.last()` |
