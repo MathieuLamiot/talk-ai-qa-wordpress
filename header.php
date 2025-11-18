@@ -9,7 +9,7 @@
 <header role="banner" class="site-header">
   <div class="container">
     <a href="<?php echo esc_url(home_url('/')); ?>">AI for QA in WordPress</a>
-    <nav role="navigation" aria-label="Primary">
+    <nav role="navigation" aria-label="Main" data-testid="primary-nav">
       <?php
         wp_nav_menu([
           'theme_location' => 'primary',

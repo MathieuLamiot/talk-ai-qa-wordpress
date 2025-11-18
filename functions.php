@@ -24,3 +24,17 @@ add_action('rest_api_init', function () {
     }
   ]);
 });
+
+
+// Rename "Promo" menu item label to "Deals" in the Primary menu (demo of intentional UI change)
+add_filter('wp_nav_menu_objects', function ($items, $args) {
+  if (!isset($args->theme_location) || $args->theme_location !== 'primary') {
+    return $items;
+  }
+  foreach ($items as $item) {
+    if (trim($item->title) === 'Promo') {
+      $item->title = 'Deals';
+    }
+  }
+  return $items;
+}, 10, 2);
