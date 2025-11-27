@@ -4,4 +4,4 @@ Task:
 Patch the test in a way that does not change the business oracle. Only adjust the test expectations to be more resilient:
 
 Prefer the stable test id I added (data-testid="primary-nav").
-For the nav link, target the destination (href*="/promo") rather than the exact visible text.
+For the nav link, target the destination (a[href*="/promo"]) rather than the exact visible text.
