@@ -66,3 +66,11 @@ python3 scripts/vr_pack_for_claude.py --task task-descriptions/task-3-adjust-pri
 ```
 
 Then copy/paste `out/ai-packet.md` to an AI and observe the answer.
+
+## Scenario 4: Self-healing end-to-end test
+
+Checkout the branch `break-playwright-test`.
+
+Use the prompt in `scripts/prompt-for-test-fix.md` to ask an AI agent to fix the test.
+
+Run the test again with `npm test` to validate the fix.
